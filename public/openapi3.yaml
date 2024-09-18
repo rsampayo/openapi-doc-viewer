@@ -1,0 +1,1232 @@
+openapi: 3.1.0
+info:
+  title: Servicios Web de Seguros Argos
+  version: 1.0.2
+  description: |
+    API para interactuar con los servicios de Seguros Argos, incluyendo registro de pólizas, acceso de usuarios, y más.
+
+    ## Autenticación
+
+    La autenticación se realiza mediante el envío de credenciales de acceso dentro del cuerpo de la solicitud (`requestBody`) para los endpoints que lo requieran. Las credenciales deben estar estructuradas según el esquema `AccesoJSON`, que incluye el nombre de usuario (`usuario`) y la contraseña cifrada (`password`) utilizando el algoritmo MD5.
+
+    **Endpoints que requieren autenticación:**
+    - `GET /mobile/acceso/getUsuario`
+    - `POST /mobile/poliza/getDatosProducto`
+    - `POST /mobile/poliza/saveValidPoliza`
+    - `POST /mobile/poliza/ejecutaCobranzaDetalle`
+    - `POST /mobile/principal/getProductosUsuarioRiesgo`
+
+    Además, el endpoint `GET /mobile/acceso/getUsuario` se utiliza para validar las credenciales y obtener acceso al sistema.
+
+
+servers:
+  - url: https://argosnet.segurosargos.com/sei/rest
+    description: Servidor de pruebas
+paths:
+  /mobile/acceso/getUsuario:
+    get:
+      operationId: getUsuarioAccess
+      summary: Acceso al Sistema
+      description: Este servicio valida el acceso al sistema comprobando el nombre de usuario y la contraseña.
+      parameters:
+        - name: usuario
+          in: query
+          description: Nombre de usuario que intenta acceder al sistema.
+          required: true
+          schema:
+            type: string
+        - name: clave
+          in: query
+          description: Contraseña del usuario, cifrada con el algoritmo MD5.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Inicio de sesión exitoso.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsuarioJSON"
+        "401":
+          description: Credenciales inválidas o acceso no autorizado.
+  /mobile/principal/getOcupaciones:
+    get:
+      operationId: getOcupacionesList
+      summary: Obtener Lista de Ocupaciones
+      description: Recupera una lista de ocupaciones disponibles.
+      responses:
+        "200":
+          description: Lista de ocupaciones recuperada con éxito.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OcupacionJSON"
+  /mobile/principal/getCatalogos:
+    get:
+      operationId: getCatalogos
+      summary: Obtener Catálogos
+      description: Devuelve una lista de catálogos disponibles.
+      parameters:
+        - name: tipoCatalogo
+          in: query
+          description: Nombre del catálogo, por ejemplo, BANCOS_PARTICIPANTES o DEPORTES_PELIGROSOS.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Catálogo recuperado con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpcionJSON"
+  /mobile/poliza/getDatosProducto:
+    post:
+      operationId: getDatosProducto
+      summary: Obtener Datos del Producto
+      description: Recupera la información del producto en función del método de pago.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductoBasJSON"
+      responses:
+        "200":
+          description: Datos del producto recuperados con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatosProductoJSON"
+  /mobile/poliza/saveValidPoliza:
+    post:
+      operationId: saveValidPoliza
+      summary: Registrar Póliza
+      description: Registra una póliza en el sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PolizaJSON"
+            example: # Aquí agregamos el ejemplo
+              acceso:
+                usuario: "USUARIO"
+                password: "PASSWORD_HASH_MD5"
+              folioPoliza: null
+              prima: 250
+              formaPago: "MENSUAL"
+              nombreProducto: "PLAN500"
+              nombreNegocio: "EXPRESS"
+              nombreOficina: "ARGEXP"
+              fechaInicioVigencia: null
+              fechaTerminoVigencia: null
+              sumaAsegurada: 500000
+              usuarioRegistra: "USUARIO"
+              estadoPoliza: null
+              status: null
+              enviaConfirmacion: null
+              numeroTarjeta: null
+              mes: null
+              anio: null
+              autorizacion: null
+              folioPago: null
+              primerApellido: "PEREXX"
+              segundoApellido: "PEREZ"
+              nombre: "RODRIGO"
+              fechaNacimiento: "29/08/2000"
+              sexo: 1
+              estadoCivil: 2
+              edad: 34
+              paisNacimiento: "Mexico"
+              nacionalidad: ""
+              ocupacion: ""
+              curp: ""
+              rfc: "LOPR880829KB5"
+              idFiscal: "LOPR880829KB5"
+              paisAsignaDoc: "Mexico"
+              fiel: "NO CUENTO CON ELLA"
+              cp: "57000"
+              calle: "FAISANES"
+              noInt: ""
+              noExt: ""
+              colonia: "Benito Juarez"
+              ciudad: "Nezahualcoyotl"
+              municipio: "Nezahualcoyotl"
+              estadoDir: ""
+              claveEstado: "15"
+              entidadFederativa: "Mexico"
+              provincia: ""
+              demarcacion: ""
+              pais: "Mexico"
+              tel1: "5555555555"
+              tel2: ""
+              correoElectronico: "mcoria@segurosargos.com"
+              cadenaAceptacion: ""
+              avisoPrivacidad: "S"
+              terminosCondiciones: "S"
+              beneficiarios:
+                - nombre: "IVONNE"
+                  primerApellido: "SOTO"
+                  segundoApellido: "VEGA"
+                  parentesco: "Conyuge"
+                  porcentaje: 100
+                  fechaNacimiento: null
+                  calle: "FAISANES"
+                  numExt: "105"
+                  numInt: ""
+                  colonia: "Benito Juarez"
+                  delegacion: ""
+                  municipio: "Nezahualcoyotl"
+                  ciudad: "Nezahualcoyotl"
+                  estado: "Mexico"
+                  provincia: ""
+                  departamento: ""
+                  cp: "57000"
+                  pais: "Mexico"
+              declaracionFirmada: "N"
+              parentescoDeclaracion: ""
+              nombreCont: "LOPEZ"
+              primerApCont: "PEREZ"
+              segundoApCont: "RODRIGO"
+              fechaNacimientoCont: "29/08/1988"
+              rfcCont: "LOPR880829KB5"
+              sexoCont: 1
+              preg1: "SI"
+              preg2: "SI"
+              preg3: ""
+              tipoAsegurado: null
+              idOcupacion: "1"
+              estatura: 1.70
+              peso: 70
+              identificacion: "NA"
+              entidadFederativaNac: "Ciudad de Mexico"
+              poblacionNac: "NA"
+              entidadFederativaContrata: "Mexico"
+              ingresosAnuales: "$0 a $200,000 MXN"
+              estadoClave: "15"
+              residenciaEnExtranjero: "S"
+              localidad: 1
+              pld:
+                asegPaga: "S"
+                otraNacionalidadResidencia: "S"
+                otraNacionalidadResidenciaEsp: ""
+                tributaOtroPais: "S"
+                tributaOtroPaisEsp: ""
+                aseguradoCargoGob: "S"
+                cargoGobEsp: []
+                parientesCargoGob: "N"
+                parientesCargoGobEsp: []
+                aseguradoPersonaFisica: "N"
+                aseguradoVinculosComerciales: "N"
+                aseguradoVinculosComercialesPais: ""
+                declaracionFirmada: "S"
+                aceptoAvisoPrivacidad: "S"
+                otraNacionalidadResidenciaCont: "N"
+                otraNacionalidadResidenciaEspCont: ""
+                tributaOtroPaisCont: "N"
+                tributaOtroPaisEspCont: ""
+                contratanteCargoGob: "N"
+                cargoGobEspCont: []
+                contratanteParientesCargoGob: "N"
+                parientesCargoGobEspCont: []
+                contratantePersonaFisica: "N"
+                contratanteVinculosComerciales: "N"
+                contratanteVinculosComercialesPais: ""
+                aceptoTerminosCondiciones: "S"
+                domicilioDeclaracionTercero: ""
+                comprobanteDeclaracionTercero: ""
+      responses:
+        "200":
+          description: Póliza registrada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RespuestaAltaJSON"
+  /mobile/poliza/ejecutaCobranzaDetalle:
+    post:
+      operationId: ejecutaCobranzaDetalle
+      summary: Cobranza de Póliza
+      description: Ejecuta un proceso de cobranza de póliza.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatosCobranzaJSON"
+      responses:
+        "200":
+          description: Cobranza ejecutada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RespuestaCobranzaJSON"
+  /mobile/poliza/consultaPoliza:
+    get:
+      operationId: consultaPoliza
+      summary: Consulta de Póliza
+      description: Este servicio permite consultar los detalles de una póliza específica.
+      parameters:
+        - name: folioPoliza
+          in: query
+          description: Folio de la póliza a consultar.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Detalles de la póliza consultada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PolizaResJSON"
+  /mobile/principal/getProductosUsuarioRiesgo:
+    post:
+      operationId: getProductosUsuarioRiesgo
+      summary: Obtener Productos del Usuario
+      description: Este servicio proporciona los productos disponibles para el usuario, basado en el tipo de riesgo seleccionado.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatosProductoUsuarioJSON"
+      responses:
+        "200":
+          description: Productos obtenidos con éxito.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductoUsuarioJSON"
+components:
+  schemas:
+    AccesoJSON:
+      type: object
+      required:
+        - usuario
+        - password
+      properties:
+        usuario:
+          type: string
+          maxLength: 15
+          description: El nombre de usuario del usuario que solicita acceso al servicio web.
+        password:
+          type: string
+          maxLength: 50
+          description: La contraseña encriptada con MD5 del usuario que solicita acceso.
+
+    BeneficiarioJSON:
+      type: object
+      properties:
+        primerApellido:
+          type: string
+          maxLength: 50
+          description: El primer apellido del beneficiario.
+        segundoApellido:
+          type: string
+          maxLength: 50
+          description: El segundo apellido del beneficiario.
+        nombre:
+          type: string
+          maxLength: 50
+          description: El primer nombre del beneficiario.
+        parentesco:
+          type: string
+          maxLength: 50
+          description: La relación del beneficiario con el asegurado (por ejemplo, cónyuge, hijo).
+        porcentaje:
+          type: integer
+          description: El porcentaje del beneficio asignado al beneficiario.
+        fechaNacimiento:
+          type: string
+          maxLength: 10
+          description: La fecha de nacimiento del beneficiario en el formato dd/mm/aaaa.
+        domicilio:
+          type: object
+          properties:
+            calle:
+              type: string
+              maxLength: 45
+              description: La dirección de la calle del beneficiario.
+            numExt:
+              type: string
+              maxLength: 45
+              description: El número exterior de la dirección del beneficiario.
+            numInt:
+              type: string
+              maxLength: 45
+              description: El número interior de la dirección del beneficiario.
+            colonia:
+              type: string
+              maxLength: 60
+              description: La colonia o vecindario de la dirección del beneficiario.
+            delegacion:
+              type: string
+              maxLength: 60
+              description: La delegación o municipio del beneficiario.
+            municipio:
+              type: string
+              maxLength: 60
+              description: El municipio o demarcación política del beneficiario.
+            ciudad:
+              type: string
+              maxLength: 60
+              description: La ciudad donde reside el beneficiario.
+            entidadFederativa:
+              type: string
+              maxLength: 50
+              description: El estado o entidad federativa donde reside el beneficiario.
+            estado:
+              type: string
+              maxLength: 50
+              description: El estado del beneficiario.
+            provincia:
+              type: string
+              maxLength: 45
+              description: La provincia donde reside el beneficiario.
+            departamento:
+              type: string
+              maxLength: 45
+              description: El departamento o división política similar donde reside el beneficiario.
+            cp:
+              type: string
+              maxLength: 5
+              description: El código postal de la dirección del beneficiario.
+            pais:
+              type: string
+              maxLength: 70
+              description: El país donde reside el beneficiario.
+    
+    CargaArchivosJSON:
+      type: object
+      properties:
+        acceso:
+          $ref: "#/components/schemas/AccesoJSON"
+          description: Credenciales de acceso para el servicio web.
+        folioPoliza:
+          type: integer
+          description: El número de póliza al que se están cargando los documentos y la firma.
+        file1:
+          type: string
+          format: byte
+          description: El primer archivo a cargar, codificado como una cadena Base64 (por ejemplo, una imagen JPG).
+        file2:
+          type: string
+          format: byte
+          description: El segundo archivo a cargar, codificado como una cadena Base64 (por ejemplo, una imagen JPG).
+        file3:
+          type: string
+          format: byte
+          description: El tercer archivo a cargar, codificado como una cadena Base64 (por ejemplo, una imagen JPG).
+
+    CoberturaJSON:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: Nombre de la cobertura o característica del seguro.
+        sumaAsegurada:
+          type: number
+          description: El monto asegurado asociado a esta cobertura. Si es 0, el monto se determina según las primas disponibles y el método de pago.
+        leyenda:
+          type: string
+          description: Notas adicionales o descargos de responsabilidad para esta cobertura, típicamente mostradas cuando no se especifica un monto asegurado.
+
+    DatosCobranzaJSON:
+      type: object
+      properties:
+        acceso:
+          $ref: "#/components/schemas/AccesoJSON"
+          description: Credenciales de acceso para el servicio web.
+        importe:
+          type: number
+          description: El monto total a cobrar, incluyendo la prima y cualquier cargo adicional.
+        folioPoliza:
+          type: integer
+          description: El número de póliza que se está cobrando.
+        tarjetahabiente:
+          type: string
+          maxLength: 150
+          description: El nombre del titular de la tarjeta que realiza el pago.
+        numeroTarjeta:
+          type: string
+          maxLength: 16
+          description: El número de la tarjeta de crédito utilizada para el pago.
+        mesVencimiento:
+          type: string
+          maxLength: 2
+          description: El mes de vencimiento de la tarjeta de crédito (formato de dos dígitos, por ejemplo, '01' para enero).
+        anioVencimiento:
+          type: string
+          maxLength: 2
+          description: El año de vencimiento de la tarjeta de crédito (formato de dos dígitos, por ejemplo, '24' para 2024).
+        cvv:
+          type: string
+          maxLength: 3
+          description: El código CVV de la tarjeta de crédito (típicamente 3 dígitos).
+        diaCobro1:
+          type: string
+          maxLength: 2
+          description: Día de cobro preferido 1 (dos dígitos, por ejemplo, '01', '15').
+        diaCobro2:
+          type: string
+          maxLength: 2
+          description: Día de cobro preferido 2 (dos dígitos, por ejemplo, '01', '15').
+
+    DatosPolizaJSON:
+      type: object
+      properties:
+        acceso:
+          $ref: "#/components/schemas/AccesoJSON"
+          description: Credenciales de acceso para el servicio web.
+        folioPoliza:
+          type: integer
+          description: El número de póliza único al que se hace referencia.
+        tipoCorreo:
+          type: integer
+          enum:
+            - 1
+            - 2
+          description: "El tipo de correo electrónico que se enviará: 1 para Kit del Cliente, 2 para Confirmación."
+
+    DatosProductoJSON:
+      type: object
+      properties:
+        estado:
+          $ref: "#/components/schemas/EstadoJSON"
+          description: Estado y mensaje de la solicitud.
+        prima:
+          type: number
+          description: El monto de la prima del producto.
+        sumaAsegurada:
+          type: integer
+          description: El monto asegurado del producto.
+        nombreNegocio:
+          type: string
+          description: El nombre del negocio asociado con el producto.
+        coberturas:
+          type: array
+          items:
+            $ref: "#/components/schemas/CoberturaJSON"
+          description: Una lista de coberturas asociadas con el producto.
+
+    EstadoJSON:
+      type: object
+      properties:
+        estado:
+          type: boolean
+          description: Indica el estado de la solicitud, verdadero para éxito y falso para fallo.
+        mensaje:
+          type: string
+          description: Un mensaje de error o de éxito asociado con la solicitud.
+
+    ObservacionesPolizaJSON:
+      type: object
+      properties:
+        acceso:
+          $ref: "#/components/schemas/AccesoJSON"
+          description: Credenciales de acceso para el servicio web.
+        observaciones:
+          type: array
+          items:
+            $ref: "#/components/schemas/ObservacionPolizaJSON"
+          description: Una lista de observaciones relacionadas con la póliza.
+
+    ObservacionPolizaJSON:
+      type: object
+      properties:
+        folioPoliza:
+          type: integer
+          description: El número de póliza único.
+        observaciones:
+          type: string
+          description: La observación o comentario real realizado respecto a la póliza.
+        nombreObservacion:
+          type: string
+          description: El nombre del usuario que realizó la observación.
+        fechaObservacion:
+          type: string
+          format: date-time
+          description: La marca de tiempo cuando se registró la observación.
+        tipo:
+          type: integer
+          description: El tipo de observación, por defecto es 1.
+
+    OpcionJSON:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: El nombre que se muestra de la opción.
+        valor:
+          type: string
+          description: El valor que se enviará o seleccionará, si aplica.
+
+    DatosProductoUsuarioJSON:
+      type: object
+      required:
+        - acceso
+        - riesgo
+      properties:
+        acceso:
+          $ref: "#/components/schemas/AccesoJSON"
+          description: Credenciales de acceso para el servicio web.
+        riesgo:
+          type: string
+          description: El tipo de riesgo asociado con la ocupación seleccionada por el usuario.
+
+    PolizaJSON:
+      type: object
+      required:
+        - prima
+        - formaPago
+        - nombreProducto
+        - nombreNegocio
+        - usuarioRegistra
+        - primerApellido
+        - segundoApellido
+        - nombre
+        - fechaNacimiento
+        - sexo
+        - estadoCivil
+        - ocupacion
+        - curp
+        - cp
+        - calle
+        - colonia
+        - ciudad
+        - tel1
+        - peso
+        - estatura
+        - nacionalidad
+        - noInt
+        - noExt
+        - municipio
+        - claveEstado
+        - correoElectronico
+        - beneficiarios
+      properties:
+        acceso:
+          $ref: "#/components/schemas/AccesoJSON"
+          description: Credenciales de acceso para el servicio web.
+        estado:
+          $ref: "#/components/schemas/EstadoJSON"
+          description: El estado de la póliza y el mensaje relacionado con la solicitud.
+        folioPoliza:
+          type: integer
+          description: El número de póliza único. Si se omite, la API generará uno.
+        prima:
+          type: number
+          description: El monto de la prima para la póliza. **Requerido.**
+        formaPago:
+          type: string
+          maxLength: 50
+          description: El método de pago para la póliza (por ejemplo, mensual, anual). **Requerido.**
+        nombreProducto:
+          type: string
+          maxLength: 15
+          description: El nombre del producto asociado con la póliza. **Requerido.**
+        nombreNegocio:
+          type: string
+          maxLength: 10
+          description: El nombre del negocio u oficina que emite la póliza. **Requerido.**
+        nombreOficina:
+          type: string
+          maxLength: 10
+          description: El nombre de la oficina que registra la póliza.
+        fechaInicioVigencia:
+          type: string
+          format: date
+          description: La fecha de inicio de la vigencia de la póliza.
+        fechaTerminoVigencia:
+          type: string
+          format: date
+          description: La fecha de término de la vigencia de la póliza.
+        sumaAsegurada:
+          type: integer
+          description: La suma asegurada para la póliza.
+        usuarioRegistra:
+          type: string
+          maxLength: 15
+          description: El usuario que registró la póliza. **Requerido.**
+        estadoPoliza:
+          type: string
+          maxLength: 20
+          description: El estado de la póliza (por ejemplo, activa, cancelada).
+        status:
+          type: integer
+          description: El código numérico que representa el estado de la póliza.
+        enviaConfirmacion:
+          type: boolean
+          description: Indica si se debe enviar un correo electrónico de confirmación.
+        numeroTarjeta:
+          type: string
+          maxLength: 16
+          description: El número de la tarjeta de crédito utilizada para los pagos.
+        mes:
+          type: string
+          maxLength: 2
+          description: El mes de vencimiento de la tarjeta de crédito (dos dígitos).
+        anio:
+          type: string
+          maxLength: 2
+          description: El año de vencimiento de la tarjeta de crédito (dos dígitos).
+        autorizacion:
+          type: string
+          maxLength: 10
+          description: El código de autorización para el pago con tarjeta de crédito.
+        folioPago:
+          type: string
+          maxLength: 10
+          description: El número de folio para la transacción de pago.
+        primerApellido:
+          type: string
+          maxLength: 50
+          description: El primer apellido del asegurado. **Requerido.**
+        segundoApellido:
+          type: string
+          maxLength: 50
+          description: El segundo apellido del asegurado. **Requerido.**
+        nombre:
+          type: string
+          maxLength: 50
+          description: El primer nombre del asegurado. **Requerido.**
+        fechaNacimiento:
+          type: string
+          format: date
+          description: La fecha de nacimiento del asegurado. **Requerido.**
+        sexo:
+          type: integer
+          description: El género del asegurado (1=masculino, 2=femenino). **Requerido.**
+        estadoCivil:
+          type: integer
+          description: El estado civil del asegurado (1=soltero, 2=casado). **Requerido.**
+        edad:
+          type: integer
+          description: La edad del asegurado.
+        paisNacimiento:
+          type: string
+          maxLength: 50
+          description: El país de nacimiento del asegurado.
+        nacionalidad:
+          type: string
+          maxLength: 50
+          description: La nacionalidad del asegurado. Puede enviarse vacío.
+          pattern: "^.*$"
+        ocupacion:
+          type: string
+          maxLength: 50
+          description: La ocupación del asegurado. **Requerido.** Puede enviarse vacío.
+          pattern: "^.*$"
+        curp:
+          type: string
+          maxLength: 18
+          description: La CURP del asegurado. **Requerido.** Puede enviarse vacío.
+          pattern: "^.*$"
+        rfc:
+          type: string
+          maxLength: 13
+          description: El RFC del asegurado.
+        idFiscal:
+          type: string
+          maxLength: 50
+          description: El ID fiscal del asegurado.
+        paisAsignaDoc:
+          type: string
+          maxLength: 50
+          description: El país que emitió el ID fiscal.
+        fiel:
+          type: string
+          maxLength: 50
+          description: El número de serie de la FIEL.
+        cp:
+          type: string
+          maxLength: 5
+          description: El código postal de la dirección del asegurado. **Requerido.**
+        calle:
+          type: string
+          maxLength: 50
+          description: La calle de la dirección del asegurado. **Requerido.**
+        noExt:
+          type: string
+          maxLength: 20
+          description: El número exterior de la dirección del asegurado. **Requerido.** Puede enviarse vacío.
+          pattern: "^.*$"
+        noInt:
+          type: string
+          maxLength: 20
+          description: El número interior de la dirección del asegurado. **Requerido.** Puede enviarse vacío.
+          pattern: "^.*$"
+        colonia:
+          type: string
+          maxLength: 50
+          description: La colonia o vecindario de la dirección del asegurado. **Requerido.**
+        ciudad:
+          type: string
+          maxLength: 50
+          description: La ciudad de la dirección del asegurado. **Requerido.**
+        municipio:
+          type: string
+          maxLength: 50
+          description: El municipio o división política de la dirección del asegurado. **Requerido.** Puede enviarse vacío.
+          pattern: "^.*$"
+        estadoDir:
+          type: string
+          maxLength: 50
+          description: El estado de la dirección del asegurado.
+        claveEstado:
+          type: string
+          maxLength: 2
+          description: La clave de estado (código de dos letras) de la dirección del asegurado.
+        provincia:
+          type: string
+          maxLength: 50
+          description: La provincia del asegurado.
+        demarcacion:
+          type: string
+          maxLength: 50
+          description: El departamento o división política del asegurado.
+        entidadFederativa:
+          type: string
+          maxLength: 50
+          description: La entidad federativa donde reside el asegurado.
+        pais:
+          type: string
+          maxLength: 50
+          description: El país de la dirección del asegurado.
+        tel1:
+          type: string
+          maxLength: 13
+          description: El número de teléfono de contacto principal del asegurado. **Requerido.**
+        tel2:
+          type: string
+          maxLength: 13
+          description: El número de teléfono de contacto secundario del asegurado.
+        correoElectronico:
+          type: string
+          maxLength: 100
+          description: La dirección de correo electrónico del asegurado.
+        cuentaClabe:
+          type: string
+          maxLength: 18
+          description: El número de cuenta CLABE para depósitos.
+        pase:
+          type: number
+          description: La contribución PASE para la póliza.
+        pregunta1:
+          type: boolean
+          description: Respuesta a la pregunta médica 1.
+        pregunta2:
+          type: boolean
+          description: Respuesta a la pregunta médica 2.
+        pregunta3:
+          type: boolean
+          description: Respuesta a la pregunta médica 3.
+        cadenaAceptacion:
+          type: string
+          maxLength: 500
+          description: La cadena de aceptación para la póliza.
+        avisoPrivacidad:
+          type: string
+          enum:
+            - S
+            - N
+          description: Respuesta a la aceptación del aviso de privacidad ('S' para sí, 'N' para no).
+        terminosCondiciones:
+          type: string
+          enum:
+            - S
+            - N
+          description: Respuesta a la aceptación de términos y condiciones ('S' para sí, 'N' para no).
+        declaracionFirmada:
+          type: string
+          enum:
+            - S
+            - N
+          description: Respuesta al consentimiento para la transferencia de datos ('S' para sí, 'N' para no).
+        parentescoDeclaracion:
+          type: string
+          maxLength: 50
+          description: Requerido si declaracionFirmada es 'S'. La relación con el asegurado.
+        beneficiarios:
+          $ref: "#/components/schemas/BeneficiarioJSON"
+          description: La suma de los porcentajes de los beneficiarios debe ser 100.
+        nombreCont:
+          type: string
+          description: Nombre de la persona de contacto del asegurado.
+        primerApCont:
+          type: string
+          description: Primer apellido de la persona de contacto.
+        segundoApCont:
+          type: string
+          description: Segundo apellido de la persona de contacto.
+        fechaNacimientoCont:
+          type: string
+          format: date
+          description: Fecha de nacimiento de la persona de contacto.
+        rfcCont:
+          type: string
+          maxLength: 13
+          description: El RFC de la persona de contacto.
+        sexoCont:
+          type: integer
+          description: El género de la persona de contacto (1=masculino, 2=femenino).
+        tipoAsegurado:
+          type: string
+          description: Tipo de persona asegurada.
+        estatura:
+          type: number
+          description: Estatura de la persona asegurada (en cm).
+        peso:
+          type: number
+          description: Peso de la persona asegurada (en kg).
+        idOcupacion:
+          type: string
+          description: ID de ocupación del asegurado.
+        identificacion:
+          type: string
+          description: La identificación oficial presentada.
+        entidadFederativaNac:
+          type: string
+          description: El estado o entidad federativa donde nació el asegurado.
+        poblacionNac:
+          type: string
+          description: La ciudad o población donde nació el asegurado.
+        entidadFederativaContrata:
+          type: string
+          description: El estado o entidad federativa donde se contrata la póliza.
+        ingresosAnuales:
+          type: string
+          description: Rango de ingresos anuales del asegurado.
+        estadoClave:
+          type: string
+          maxLength: 2
+          description: La clave de estado (código de dos letras) de la dirección del asegurado.
+        residenciaEnExtranjero:
+          type: string
+          description: Indica si el asegurado reside en el extranjero ('S' para sí, 'N' para no).
+        localidad:
+          type: string
+          maxLength: 50
+          description: La localidad de la dirección del asegurado.
+        pld:
+          $ref: "#/components/schemas/PLDJSON"
+          description: Datos adicionales para el cumplimiento de prevención de lavado de dinero.    
+
+    PolizaResJSON:
+      type: object
+      properties:
+        folioPoliza:
+          type: integer
+          description: El número de póliza único.
+        nombreCompleto:
+          type: string
+          description: El nombre completo de la persona asegurada.
+        statusStr:
+          type: string
+          description: El estado de la póliza en forma de cadena (por ejemplo, 'Activa', 'Cancelada').
+        status:
+          type: integer
+          description: El código numérico que representa el estado de la póliza.
+
+    PrimaJSON:
+      type: object
+      properties:
+        formaPago:
+          type: string
+          description: Método de pago para el producto (por ejemplo, ANUAL, SEMESTRAL, TRIMESTRAL, MENSUAL).
+        prima:
+          type: number
+          description: Monto de la prima para el producto.
+        sumaAsegurada:
+          type: integer
+          description: La suma asegurada asociada con el método de pago y la prima.
+
+    ProductoBasJSON:
+      type: object
+      properties:
+        acceso:
+          $ref: "#/components/schemas/AccesoJSON"
+          description: Credenciales de acceso para el servicio web.
+        nombreProducto:
+          type: string
+          description: Nombre del producto (clave).
+        formaPago:
+          type: string
+          description: Método de pago asociado con el producto (por ejemplo, mensual, anual).
+        sumaAsegurada:
+          type: integer
+          description: La suma asegurada para el producto.
+
+    ProductoUsuarioJSON:
+      type: object
+      properties:
+        nombreLargo:
+          type: string
+          description: El nombre completo del producto.
+        nombreProducto:
+          type: string
+          description: La clave del producto o nombre corto del producto.
+        primas:
+          type: array
+          items:
+            $ref: "#/components/schemas/PrimaJSON"
+          description: Una lista de primas asociadas con el producto.
+        coberturas:
+          type: array
+          items:
+            $ref: "#/components/schemas/CoberturaJSON"
+          description: Una lista de coberturas asociadas con el producto.
+
+    RespuestaAltaJSON:
+      type: object
+      properties:
+        folioPoliza:
+          type: integer
+          description: El número de póliza único registrado.
+        mensaje:
+          type: string
+          description: El mensaje de registro o cualquier información adicional.
+        exitoso:
+          type: boolean
+          description: Indica si el registro fue exitoso (verdadero) o fallido (falso).
+
+    UsuarioJSON:
+      type: object
+      properties:
+        estado:
+          $ref: "#/components/schemas/EstadoJSON"
+          description: El estado de la respuesta del servidor.
+        nombreCompleto:
+          type: string
+          description: El nombre completo del usuario.
+        usuario:
+          type: string
+          description: El nombre de usuario o nombre de acceso del usuario.
+        rol:
+          type: integer
+          description: El rol del usuario en el sistema.
+        accesoValido:
+          type: boolean
+          description: Verdadero si el acceso es válido, falso de lo contrario.
+        password:
+          type: string
+          description: La contraseña del usuario encriptada con MD5.
+        mail:
+          type: string
+          description: La dirección de correo electrónico del usuario.
+
+    PLDJSON:
+      type: object
+      properties:
+        asegPaga:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el asegurado es quien paga las primas.
+        otraNacionalidadResidencia:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el asegurado tiene otra nacionalidad o residencia.
+        otraNacionalidadResidenciaEsp:
+          type: string
+          description: Especifica detalles de la otra nacionalidad o residencia, si aplica.
+        tributaOtroPais:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el asegurado tributa en otro país.
+        tributaOtroPaisEsp:
+          type: string
+          description: Especifica los detalles de los pagos de impuestos en otro país, si aplica.
+        aseguradoCargoGob:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el asegurado ha ocupado un cargo gubernamental.
+        cargoGobEsp:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParientesCargoGobJSON"
+          description: Detalles del cargo gubernamental del asegurado, si aplica.
+        parientesCargoGob:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el asegurado tiene parientes cercanos en cargos gubernamentales.
+        parientesCargoGobEsp:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParientesCargoGobJSON"
+          description: Detalles de los parientes del asegurado en cargos gubernamentales.
+        aseguradoPersonaFisica:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el asegurado es una persona física con actividades comerciales.
+        aseguradoVinculosComerciales:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el asegurado tiene vínculos comerciales con países de alto riesgo.
+        aseguradoVinculosComercialesPais:
+          type: string
+          description: Especifica los países con los que el asegurado tiene vínculos comerciales, si aplica.
+        declaracionFirmada:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el asegurado actúa en su propio nombre o en nombre de otro.
+        otraNacionalidadResidenciaCont:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el contratante tiene otra nacionalidad o residencia.
+        otraNacionalidadResidenciaEspCont:
+          type: string
+          description: Especifica detalles de la otra nacionalidad o residencia del contratante, si aplica.
+        tributaOtroPaisCont:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el contratante tributa en otro país.
+        tributaOtroPaisEspCont:
+          type: string
+          description: Especifica los detalles de los pagos de impuestos del contratante en otro país, si aplica.
+        contratanteCargoGob:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el contratante ocupa o ha ocupado un cargo gubernamental.
+        cargoGobEspCont:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParientesCargoGobJSON"
+          description: Detalles del cargo gubernamental del contratante, si aplica.
+        contratanteParientesCargoGob:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el contratante tiene parientes cercanos en cargos gubernamentales.
+        parientesCargoGobEspCont:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParientesCargoGobJSON"
+          description: Detalles de los parientes del contratante en cargos gubernamentales.
+        contratantePersonaFisica:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el contratante es una persona física con actividades comerciales.
+        contratanteVinculosComerciales:
+          type: string
+          enum:
+            - S
+            - N
+          description: Indica si el contratante tiene vínculos comerciales con países de alto riesgo.
+        contratanteVinculosComercialesPais:
+          type: string
+          description: Especifica los países con los que el contratante tiene vínculos comerciales, si aplica.
+        aceptoAvisoPrivacidad:
+          type: string
+          enum:
+            - S
+            - N
+          description: Respuesta a la aceptación del aviso de privacidad.
+        aceptoTerminosCondiciones:
+          type: string
+          enum:
+            - S
+            - N
+          description: Respuesta a la aceptación de los términos y condiciones.
+        domicilioDeclaracionTercero:
+          type: string
+          description: La dirección del tercero, que requiere comprobante de domicilio.
+        comprobanteDeclaracionTercero:
+          type: string
+          description: Comprobante de domicilio para el tercero en formato BASE64.
+
+    ParientesCargoGobJSON:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: El nombre del pariente que ocupa un cargo gubernamental.
+        parentesco:
+          type: string
+          description: La relación entre el asegurado y el pariente que ocupa el cargo gubernamental.
+        cargo:
+          type: string
+          description: El cargo gubernamental específico que ocupa el pariente.
+        dependencia:
+          type: string
+          description: La entidad gubernamental o departamento donde el pariente ocupa su cargo.
+
+    OcupacionJSON:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID de la ocupación
+        descripcion:
+          type: string
+          description: Descripción de la ocupación
+        riesgo:
+          type: string
+          description: Nivel de riesgo de la ocupación
+          enum:
+            - NORMAL
+            - SUBNORMAL
+    RespuestaCobranzaJSON:
+      type: object
+      properties:
+        aceptacion:
+          type: string
+          description: Código de aceptación de la operación.
+        autorizacion:
+          type: string
+          description: Código de autorización de la operación.
+        estado:
+          type: object
+          properties:
+            estado:
+              type: boolean
+              description: Indica si la operación fue exitosa o no.
+            mensaje:
+              type: string
+              description: Mensaje detallado del estado de la operación.
+            tipoError:
+              type: string
+              description: Tipo de error que ocurrió, si aplica.
+        montoCobrado:
+          type: number
+          format: float
+          description: Monto total cobrado en la operación.
+        operacion:
+          type: string
+          description: Código o descripción de la operación.
+        referencia:
+          type: string
+          description: Referencia de la operación.
+        tarjeta:
+          type: string
+          description: Número de tarjeta involucrada en la operación.
