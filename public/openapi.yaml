@@ -5,7 +5,50 @@ info:
   title: Vidago Insurance Middleware API
   version: 1.0.3
   description: |
-    Middleware API for interacting with Argos Insurance services, handling multi-step policy registration.
+    # Vidago Insurance Middleware API
+
+    **Vidago Insurance Middleware API** serves as a robust intermediary between client applications and Argos Insurance services, facilitating a seamless and efficient insurance policy registration process. Designed to handle complex, multi-step workflows, this API enables users to initiate new policies, submit detailed information across various stages, and retrieve comprehensive policy data.
+
+    ## **Key Features:**
+
+    - **Multi-Step Policy Registration:** 
+      - **Initiate Policy:** Start a new policy registration and obtain a unique policy ID.
+      - **Submit Policy Details:** Provide personal information, select insurance plans, input health data, designate beneficiaries, and complete billing information through a structured, step-by-step process.
+      - **Retrieve Policy Information:** Access submitted data at each step to review or update information as needed.
+
+    - **Catalog Management:**
+      - **Occupations List:** Fetch a list of occupations to accurately classify insured individuals.
+      - **Insurance Plans:** Retrieve detailed information about available insurance plans, including payment methods and coverage options.
+      - **Location Data:** Obtain municipality, city, state, and neighborhood details based on postal codes to ensure accurate address information.
+
+    - **Secure Access:**
+      - **Authentication:** Utilize bearer token authentication to ensure that all API interactions are secure and authorized.
+      
+    - **Comprehensive Responses:**
+      - **Success and Error Handling:** Receive clear and descriptive responses for successful operations and handle errors effectively with standardized error messages.
+
+    ## **Use Cases:**
+
+    - **Web and Mobile Applications:** Integrate the API to offer users a streamlined process for registering and managing their insurance policies directly within your application.
+    - **Internal Systems:** Enhance backend systems by automating policy registrations and data retrieval, reducing manual intervention and improving efficiency.
+    - **Third-Party Integrations:** Enable partners and affiliates to interact with Argos Insurance services securely and reliably through standardized API endpoints.
+
+    ## **Getting Started:**
+
+    1. **Authentication:** Obtain a bearer token to authenticate your requests.
+
+    2. **Initiate a Policy:** Use the `/policy/initiate` endpoint to start a new policy registration.
+    
+    3. **Submit Information:** Progress through each registration step by submitting the required data to endpoints like `/policy/{policyId}/step/1`, `/policy/{policyId}/step/2`, etc.
+    
+    4. **Retrieve Data:** Access submitted information at any step using the corresponding `GET` endpoints to ensure accuracy and completeness.
+   
+    5. **Manage Catalogs:** Utilize endpoints like `/getOccupations`, `/getCatalogs`, and `/getPlans` to fetch necessary catalog data for your application.
+
+    ## **Support and Contact:**
+
+    For assistance or inquiries, please reach out to our support team:
+
   contact:
     name: Ukko
     email: support@ukko.mx
